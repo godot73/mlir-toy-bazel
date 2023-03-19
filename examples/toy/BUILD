@@ -70,16 +70,28 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "dummy_pass",
+    srcs = ["dummy_pass.cc"],
+    hdrs = ["dummy_pass.h"],
+    deps = [
+        ":toy_dialect_lib",
+        "@llvm-project//mlir:Pass",
+    ],
+)
+
 cc_test(
     name = "ops_test",
     size = "small",
     srcs = ["ops_test.cc"],
     includes = ["include/"],
     deps = [
+        ":dummy_pass",
         ":toy_dialect_lib",
         "@com_google_absl//absl/log",
         "@com_google_googletest//:gtest_main",
-        "@llvm-project//mlir:IR",
         "@llvm-project//mlir:FuncDialect",
+        "@llvm-project//mlir:IR",
+        "@llvm-project//mlir:Pass",
     ],
 )

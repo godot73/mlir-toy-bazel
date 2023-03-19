@@ -1,16 +1,18 @@
 #include "absl/log/log.h"
+#include "examples/toy/dummy_pass.h"
 #include "gtest/gtest.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/Verifier.h"
+#include "mlir/Pass/PassManager.h"
 #include "mlir/Support/DebugStringHelper.h"
 #include "toy/Dialect.h"
 
 namespace mlir::toy {
 namespace {
 
-class ToyMlirGenTest : public ::testing::Test {
+class ToyTest : public ::testing::Test {
  protected:
   const std::string func_name_ = "main";
   std::unique_ptr<MLIRContext> context_own_ = [] {
@@ -23,7 +25,7 @@ class ToyMlirGenTest : public ::testing::Test {
   OpBuilder builder_{context_};
 };
 
-TEST_F(ToyMlirGenTest, Basic) {
+TEST_F(ToyTest, Basic) {
   llvm::SmallVector<long int, 4> tensor_shape = {32L, 64, 2};
   // Toy dialect requires the element type to be F64.
   Type element_type = builder_.getF64Type();
@@ -49,6 +51,25 @@ TEST_F(ToyMlirGenTest, Basic) {
 
   LOG(INFO) << debugString(*module);
   EXPECT_FALSE(failed(verify(*module))) << "module verification error";
+}
+
+class DummyPassTest : public ToyTest {
+ protected:
+  std::unique_ptr<PassManager> pm_ = [this] {
+    auto pm = std::make_unique<PassManager>(context_);
+    pm->addPass(CreateDummyPass());
+    return pm;
+  }();
+};
+
+TEST_F(DummyPassTest, Basic) {
+  Location unknown_loc = builder_.getUnknownLoc();
+  // Build ModuleOp.
+  OwningOpRef<ModuleOp> module = builder_.create<ModuleOp>(unknown_loc);
+
+  LOG(INFO) << "before: " << debugString(*module);
+  pm_->run(module->getOperation());
+  LOG(INFO) << "after: " << debugString(*module);
 }
 
 }  // namespace
