@@ -26,14 +26,16 @@ class ToyTest : public ::testing::Test {
 };
 
 TEST_F(ToyTest, Basic) {
+  using TypeVector = llvm::SmallVector<Type, 4>;
+
   llvm::SmallVector<long int, 4> tensor_shape = {32, 64, 2};
   // Toy dialect requires the element type to be F64.
   Type element_type = builder_.getF64Type();
   RankedTensorType tensor_type =
       RankedTensorType::get(tensor_shape, element_type);
-  TypeRange input_types = {tensor_type};
+  TypeVector input_types = {tensor_type};
   // Toy dialect requires the number of return values to be 1.
-  TypeRange output_types = {tensor_type};
+  TypeVector output_types = {tensor_type};
   FunctionType func_type =
       FunctionType::get(context_, input_types, output_types);
   Location unknown_loc = builder_.getUnknownLoc();
