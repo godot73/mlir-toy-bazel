@@ -88,8 +88,8 @@ cc_test(
     deps = [
         ":dummy_pass",
         ":toy_dialect_lib",
-        "@com_google_absl//absl/log",
-        "@com_google_googletest//:gtest_main",
+        "@absl//absl/log",
+        "@googletest//:gtest_main",
         "@llvm-project//mlir:FuncDialect",
         "@llvm-project//mlir:IR",
         "@llvm-project//mlir:Pass",
