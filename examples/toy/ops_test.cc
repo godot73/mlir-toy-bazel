@@ -26,7 +26,7 @@ class ToyTest : public ::testing::Test {
 };
 
 TEST_F(ToyTest, Basic) {
-  llvm::SmallVector<long int, 4> tensor_shape = {32L, 64, 2};
+  llvm::SmallVector<long int, 4> tensor_shape = {32, 64, 2};
   // Toy dialect requires the element type to be F64.
   Type element_type = builder_.getF64Type();
   RankedTensorType tensor_type =
