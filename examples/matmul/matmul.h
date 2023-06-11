@@ -1,5 +1,5 @@
 #ifndef _EXAMPLE_MATMUL_MATMUL_H_
-#undef _EXAMPLE_MATMUL_MATMUL_H_
+#define _EXAMPLE_MATMUL_MATMUL_H_
 
 #include <stdint.h>
 
