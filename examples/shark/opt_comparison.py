@@ -82,19 +82,24 @@ def save_json(data, filename):
 
 
 def collect_huggingface_logits():
+    t0 = time.time()
     model_wrapper = load_huggingface_model()
+    print('--- Took {} seconds to load Huggingface.'.format(
+        time.time() - t0))
     results = []
     t0 = time.time()
     for prompt in PROMPTS:
         print('prompt: {}'.format(prompt))
         logits = run_huggingface_model(model_wrapper, prompt)
         results.append([prompt, logits[0].tolist()])
-    print('--- Took {} seconds.'.format(time.time() - t0))
+    print('--- Took {} seconds to run Huggingface.'.format(time.time() - t0))
     save_json(results, '/tmp/huggingface.json')
 
 
 def collect_shark_logits():
+    t0 = time.time()
     model_wrapper = load_shark_model()
+    print('--- Took {} seconds to load Shark.'.format(time.time() - t0))
     results = []
     t0 = time.time()
     for prompt in PROMPTS:
@@ -102,10 +107,10 @@ def collect_shark_logits():
         logits = run_shark_model(model_wrapper, prompt)
         lst = [e.tolist() for e in logits]
         results.append([prompt, lst])
-    print('--- Took {} seconds.'.format(time.time() - t0))
+    print('--- Took {} seconds to run Shark.'.format(time.time() - t0))
     save_json(results, '/tmp/shark.json')
 
 
 if __name__ == '__main__':
-#    collect_huggingface_logits()
     collect_shark_logits()
+    collect_huggingface_logits()
