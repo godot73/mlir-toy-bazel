@@ -1,7 +1,7 @@
 
 cc_library(
     name = "matmul",
-    srcs = ["matmul.c"],
+    srcs = ["matmul.cc"],
     hdrs = ["matmul.h"],
 )
 

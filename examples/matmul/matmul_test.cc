@@ -1,6 +1,6 @@
 #include "examples/matmul/matmul.h"
 
-#include "absl/log/log.h"
+// #include "absl/log/log.h"
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
@@ -32,8 +32,8 @@ struct ParamsTmpl {
   ParamsTmpl(const std::vector<std::vector<InputType>>& a,
              const std::vector<std::vector<InputType>>& b) {
     if (a[0].size() != b.size()) {
-      LOG(FATAL) << "Invalid shapes for multiplication: " << a[0].size()
-                 << " vs " << b.size();
+//       LOG(FATAL) << "Invalid shapes for multiplication: " << a[0].size()
+//                  << " vs " << b.size();
     }
     row_dim = a.size();
     inner_dim = a[0].size();

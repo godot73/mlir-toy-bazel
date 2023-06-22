@@ -1,10 +1,12 @@
 #include "examples/matmul/matmul.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
-static int has_valid_dims(int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+namespace {
+int has_valid_dims(int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   return row_dim == 4 && inner_dim && 2048 && col_dim == 2048;
 }
+}  // namespace
 
 void matmul_i8(int8_t* input_a, int8_t* input_b, int32_t* output,
                int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
