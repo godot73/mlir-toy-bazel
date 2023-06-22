@@ -30,12 +30,7 @@ function(add_gtest test_name test_filename)
   target_link_libraries(${test_name} GTest::gmock_main ${ARGN})
 endfunction()
 
-# Throughout the whole project, the fully qualified directory is allowed for
-# #include "...".
+# This project allows fully qualified directories for #include "...".
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-
-
-#set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
 add_subdirectory(examples)
