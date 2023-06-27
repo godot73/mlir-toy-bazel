@@ -26,7 +26,7 @@ ModelWrapper = collections.namedtuple('ModelWrapper', ['model', 'tokenizer'])
 def load_shark_model() -> ModelWrapper:
     vmfb_path = 'opt-1.3b_causallm_30_torch_cpu-sync.vmfb'
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)
-    shark_module = SharkInference(mlir_module=None, device='cpu-sync')
+    shark_module = SharkInference(mlir_module=None, device='cpu-task')
     shark_module.load_module(vmfb_path)
     return ModelWrapper(model=shark_module, tokenizer=tokenizer)
 
