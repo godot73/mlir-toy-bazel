@@ -2,6 +2,9 @@ import collections
 import json
 import time
 
+import torch
+import torchvision.models as models
+from torch.profiler import profile, record_function, ProfilerActivity
 from shark.shark_inference import SharkInference
 from transformers import AutoTokenizer, OPTForCausalLM
 
@@ -60,11 +63,18 @@ def load_huggingface_model() -> ModelWrapper:
                         tokenizer=AutoTokenizer.from_pretrained(MODEL_NAME))
 
 
-def run_huggingface_model(model_wrapper: ModelWrapper, prompt: str):
-    inputs = model_wrapper.tokenizer(prompt, return_tensors="pt")
-    return model_wrapper.model.forward(inputs.input_ids,
-                                       inputs.attention_mask,
-                                       return_dict=False)
+def run_huggingface_model(model_wrapper: ModelWrapper, prompt: str,
+                          index: int):
+    with profile(activities=[ProfilerActivity.CPU],
+                 record_shapes=True,
+                 with_stack=True) as prof:
+        with record_function("model_inference"):
+            inputs = model_wrapper.tokenizer(prompt, return_tensors="pt")
+            output = model_wrapper.model.forward(inputs.input_ids,
+                                                 inputs.attention_mask,
+                                                 return_dict=False)
+    prof.export_chrome_trace("/tmp/trace_{}.json".format(index))
+    return output
 
 
 def run_huggingface():
@@ -84,13 +94,12 @@ def save_json(data, filename):
 def collect_huggingface_logits():
     t0 = time.time()
     model_wrapper = load_huggingface_model()
-    print('--- Took {} seconds to load Huggingface.'.format(
-        time.time() - t0))
+    print('--- Took {} seconds to load Huggingface.'.format(time.time() - t0))
     results = []
     t0 = time.time()
-    for prompt in PROMPTS:
+    for index, prompt in enumerate(PROMPTS):
         print('prompt: {}'.format(prompt))
-        logits = run_huggingface_model(model_wrapper, prompt)
+        logits = run_huggingface_model(model_wrapper, prompt, index)
         results.append([prompt, logits[0].tolist()])
     print('--- Took {} seconds to run Huggingface.'.format(time.time() - t0))
     save_json(results, '/tmp/huggingface.json')
