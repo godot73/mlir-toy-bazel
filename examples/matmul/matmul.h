@@ -19,21 +19,43 @@ extern "C" {
 // where (row_dim, inner_dim, col_dim) MUST be (4, 2048, 2048). Otherwise, they
 // exit with code 1.
 
+struct matmul_i8_params_t {
+  const int8_t* input_a;
+  const int8_t* input_b;
+  int32_t* output;
+  int16_t row_dim;
+  int16_t inner_dim;
+  int16_t col_dim;
+};
+
+struct matmul_float_params_t {
+  const float* input_a;
+  const float* input_b;
+  float* output;
+  int16_t row_dim;
+  int16_t inner_dim;
+  int16_t col_dim;
+};
+
 // This version accepts int8 inputs and int32 outputs.
-void matmul_i8(int8_t* input_a, int8_t* input_b, int32_t* output,
+void matmul_i8(const int8_t* input_a, const int8_t* input_b, int32_t* output,
                int16_t row_dim, int16_t inner_dim, int16_t col_dim);
+
 // This version accepts f32 inputs outputs.
-void matmul_f32(float* input_a, float* input_b, float* output, int16_t row_dim,
-                int16_t inner_dim, int16_t col_dim);
+void matmul_f32(const float* input_a, const float* input_b, float* output,
+                int16_t row_dim, int16_t inner_dim, int16_t col_dim);
 
 //============================================================================//
 // The functions below are defined only for the testing purposes. All other
 // callers MUST use the above ones instead. These do not require row_dim,
 // inner_dim, col_dim to be (4, 2048, 2048).
 //============================================================================//
-void matmul_i8_impl(int8_t* input_a, int8_t* input_b, int32_t* output,
-                    int16_t row_dim, int16_t inner_dim, int16_t col_dim);
-void matmul_f32_impl(float* input_a, float* input_b, float* output,
+void matmul_i8_impl_with_params(const matmul_i8_params_t* params);
+void matmul_i8_impl(const int8_t* input_a, const int8_t* input_b,
+                    int32_t* output, int16_t row_dim, int16_t inner_dim,
+                    int16_t col_dim);
+void matmul_f32_impl_with_params(const matmul_float_params_t* params);
+void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      int16_t row_dim, int16_t inner_dim, int16_t col_dim);
 
 #ifdef __cplusplus

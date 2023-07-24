@@ -66,6 +66,10 @@ struct ParamsTmpl {
     return std::vector<OutputType>(output, output + row_dim * col_dim);
   }
 
+  void CleanOutputVector() {
+    for (int i = 0; i < row_dim * col_dim; ++i) output[i] = 0;
+  }
+
   int16_t row_dim;
   int16_t inner_dim;
   int16_t col_dim;
@@ -73,27 +77,44 @@ struct ParamsTmpl {
   InputType* input_a;
   InputType* input_b;
   OutputType* output;
+
+  matmul_i8_params_t MakeParams(const matmul_i8_params_t& params) {
+    return params;
+  }
+  matmul_float_params_t MakeParams(const matmul_float_params_t& params) {
+    return params;
+  }
 };
 
 // Overload matmul*() for unified typed tests.
-void matmul(int8_t* input_a, int8_t* input_b, int32_t* output, int16_t row_dim,
-            int16_t inner_dim, int16_t col_dim) {
+void matmul(const int8_t* input_a, const int8_t* input_b, int32_t* output,
+            int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   matmul_i8(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
-void matmul_impl(int8_t* input_a, int8_t* input_b, int32_t* output,
+void matmul_impl(const int8_t* input_a, const int8_t* input_b, int32_t* output,
                  int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   matmul_i8_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
-void matmul(float* input_a, float* input_b, float* output, int16_t row_dim,
-            int16_t inner_dim, int16_t col_dim) {
+void matmul(const float* input_a, const float* input_b, float* output,
+            int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   matmul_f32(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
-void matmul_impl(float* input_a, float* input_b, float* output, int16_t row_dim,
-                 int16_t inner_dim, int16_t col_dim) {
+void matmul_impl(const float* input_a, const float* input_b, float* output,
+                 int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
+}
+
+void matmul_impl_with_params(const matmul_i8_params_t* params) {
+  matmul_impl(params->input_a, params->input_b, params->output, params->row_dim,
+              params->inner_dim, params->col_dim);
+}
+
+void matmul_impl_with_params(const matmul_float_params_t* params) {
+  matmul_impl(params->input_a, params->input_b, params->output, params->row_dim,
+              params->inner_dim, params->col_dim);
 }
 
 template <typename T>
@@ -138,6 +159,17 @@ TYPED_TEST(MatmulTestTmpl, Basic) {
               p.col_dim);
   EXPECT_THAT(p.GetOutputVector(),
               ElementsAreArray(Flatten(this->Identity(2))));
+
+  p.CleanOutputVector();
+  auto params_struct = p.MakeParams({.input_a = p.input_a,
+                                     .input_b = p.input_b,
+                                     .output = p.output,
+                                     .row_dim = p.row_dim,
+                                     .inner_dim = p.inner_dim,
+                                     .col_dim = p.col_dim});
+  matmul_impl_with_params(&params_struct);
+  EXPECT_THAT(p.GetOutputVector(),
+              ElementsAreArray(Flatten(this->Identity(2))));
 }
 
 TYPED_TEST(MatmulTestTmpl, AllIdentity2x2) {
@@ -155,6 +187,16 @@ TYPED_TEST(MatmulTestTmpl, FirstIdentyty2x2) {
   matmul_impl(p.input_a, p.input_b, p.output, p.row_dim, p.inner_dim,
               p.col_dim);
   EXPECT_THAT(p.GetOutputVector(), ElementsAreArray(Flatten(b)));
+
+  p.CleanOutputVector();
+  auto params_struct = p.MakeParams({.input_a = p.input_a,
+                                     .input_b = p.input_b,
+                                     .output = p.output,
+                                     .row_dim = p.row_dim,
+                                     .inner_dim = p.inner_dim,
+                                     .col_dim = p.col_dim});
+  matmul_impl_with_params(&params_struct);
+  EXPECT_THAT(p.GetOutputVector(), ElementsAreArray(Flatten(b)));
 }
 
 TYPED_TEST(MatmulTestTmpl, SecondIdentyty2x2) {
@@ -164,12 +206,33 @@ TYPED_TEST(MatmulTestTmpl, SecondIdentyty2x2) {
   matmul_impl(p.input_a, p.input_b, p.output, p.row_dim, p.inner_dim,
               p.col_dim);
   EXPECT_THAT(p.GetOutputVector(), ElementsAreArray(Flatten(a)));
+
+  p.CleanOutputVector();
+  auto params_struct = p.MakeParams({.input_a = p.input_a,
+                                     .input_b = p.input_b,
+                                     .output = p.output,
+                                     .row_dim = p.row_dim,
+                                     .inner_dim = p.inner_dim,
+                                     .col_dim = p.col_dim});
+  matmul_impl_with_params(&params_struct);
+  EXPECT_THAT(p.GetOutputVector(), ElementsAreArray(Flatten(a)));
 }
 
 TYPED_TEST(MatmulTestTmpl, Basic2x2) {
   typename TestFixture::Params p({{1, 2}, {3, 4}}, {{5, -6}, {7, -8}});
   matmul_impl(p.input_a, p.input_b, p.output, p.row_dim, p.inner_dim,
               p.col_dim);
+  EXPECT_THAT(p.GetOutputVector(), ElementsAre(19, -22,  //
+                                               43, -50));
+
+  p.CleanOutputVector();
+  auto params_struct = p.MakeParams({.input_a = p.input_a,
+                                     .input_b = p.input_b,
+                                     .output = p.output,
+                                     .row_dim = p.row_dim,
+                                     .inner_dim = p.inner_dim,
+                                     .col_dim = p.col_dim});
+  matmul_impl_with_params(&params_struct);
   EXPECT_THAT(p.GetOutputVector(), ElementsAre(19, -22,  //
                                                43, -50));
 }
@@ -182,6 +245,17 @@ TYPED_TEST(MatmulTestTmpl, Basic2x3x4) {
                                   {13, -14, 15, -16}});
   matmul_impl(p.input_a, p.input_b, p.output, p.row_dim, p.inner_dim,
               p.col_dim);
+  EXPECT_THAT(p.GetOutputVector(), ElementsAre(62, -68, 74, -80,  //
+                                               143, -158, 173, -188));
+
+  p.CleanOutputVector();
+  auto params_struct = p.MakeParams({.input_a = p.input_a,
+                                     .input_b = p.input_b,
+                                     .output = p.output,
+                                     .row_dim = p.row_dim,
+                                     .inner_dim = p.inner_dim,
+                                     .col_dim = p.col_dim});
+  matmul_impl_with_params(&params_struct);
   EXPECT_THAT(p.GetOutputVector(), ElementsAre(62, -68, 74, -80,  //
                                                143, -158, 173, -188));
 }
