@@ -43,7 +43,7 @@ static int aie_matmul_f32_workgroup(void* params_ptr, void* context,
 // This self value will be passed to all future calls related to the particular
 // instance. Note that there may be multiple instances of a plugin in any
 // particular process and this must be thread-safe.
-static iree_hal_executable_plugin_status_t aie_plugin_load(
+static iree_hal_executable_plugin_status_t aie_standalone_plugin_load(
     const iree_hal_executable_plugin_environment_v0_t* environment,
     size_t param_count, const iree_hal_executable_plugin_string_pair_t* params,
     void** out_self) {
@@ -53,12 +53,12 @@ static iree_hal_executable_plugin_status_t aie_plugin_load(
 
 // Called to free any plugin state allocated in load.
 // In this sample it's a no-op as we don't have state.
-static void aie_plugin_unload(void* self) {}
+static void aie_standalone_plugin_unload(void* self) {}
 
 // Called to resolve one or more imports by symbol name.
 // See the plugin API header for more information. Note that some of the
 // functions may already be resolved and some may be optional.
-static iree_hal_executable_plugin_status_t aie_plugin_resolve(
+static iree_hal_executable_plugin_status_t aie_standalone_plugin_resolve(
     void* self, const iree_hal_executable_plugin_resolve_params_v0_t* params,
     iree_hal_executable_plugin_resolution_t* out_resolution) {
   *out_resolution = 0;
@@ -71,7 +71,7 @@ static iree_hal_executable_plugin_status_t aie_plugin_resolve(
     if (is_optional) ++symbol_name;
     if (iree_hal_executable_plugin_strcmp(symbol_name,
                                           "aie_matmul_f32") == 0) {
-      params->out_fn_ptrs[i] = simple_mul_workgroup;
+      params->out_fn_ptrs[i] = aie_matmul_f32_workgroup;
       params->out_fn_contexts[i] = NULL;  // no context used, could be self
     } else {
       if (is_optional) {
@@ -104,7 +104,7 @@ iree_hal_executable_plugin_query(
       .name = "sample_aie_matmul",
       .description =
           "standalone AIE matmul plugin sample "
-          "(aie_plugin.c)",
+          "(aie_standalone_plugin.c)",
       // Standalone plugins must declare that they are standalone so that the
       // runtime can verify support.
       .features = IREE_HAL_EXECUTABLE_PLUGIN_FEATURE_STANDALONE,
@@ -113,9 +113,9 @@ iree_hal_executable_plugin_query(
   };
   static const iree_hal_executable_plugin_v0_t plugin = {
       .header = &header,
-      .load = standalone_plugin_load,
-      .unload = standalone_plugin_unload,
-      .resolve = standalone_plugin_resolve,
+      .load = aie_standalone_plugin_load,
+      .unload = aie_standalone_plugin_unload,
+      .resolve = aie_standalone_plugin_resolve,
   };
   return max_version <= IREE_HAL_EXECUTABLE_PLUGIN_VERSION_LATEST
              ? (const iree_hal_executable_plugin_header_t**)&plugin
