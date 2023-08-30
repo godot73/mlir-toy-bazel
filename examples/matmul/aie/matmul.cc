@@ -1,6 +1,8 @@
-#include "examples/matmul/matmul.h"
+#include "matmul.h"
 
 #include <cstdlib>
+#include <cstdio>
+#include <stdint.h>
 
 namespace {
 int has_valid_dims(int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
@@ -27,6 +29,7 @@ void aie_matmul_i8(const int8_t* input_a, const int8_t* input_b, int32_t* output
 void aie_matmul_f32(const float* input_a, const float* input_b, float* output,
                 int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   if (!has_valid_dims(row_dim, inner_dim, col_dim)) exit(1);
+  printf("xxxxxxxxxxxxxxxxx");
   matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 

@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 // Computes matrix multiplication of input matrices given by `input_a` and
 // `input_b`. The output is written at `output`.
 // It is the caller's responsibility to reserve the input and the output memory
