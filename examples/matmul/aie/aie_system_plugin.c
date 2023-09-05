@@ -8,11 +8,9 @@ typedef struct {
   FILE* file;
 } system_plugin_t;
 
-extern void aie_matmul_f32(const float* input_a, const float* input_b, float* output,
-            int16_t row_dim, int16_t inner_dim, int16_t col_dim) {}
-
 static int aie_matmul_f32_workgroup(void* params_ptr, void* context,
 				void* reserved) {
+  system_plugin_t* plugin = (system_plugin_t*)context;
   typedef struct {
     const float* restrict binding0;
     size_t binding0_offset;
@@ -20,38 +18,40 @@ static int aie_matmul_f32_workgroup(void* params_ptr, void* context,
     size_t binding1_offset;
     float* restrict binding2;
     size_t binding2_offset;
-    size_t size_0;
-    size_t size_1;
-    size_t size_2;
+    size_t d0;
+    size_t d1;
+    size_t d2;
     size_t tid;
     uint32_t processor_id;
     const uint64_t* restrict processor_data;
   } params_t;
   const params_t* params = (const params_t*)params_ptr;
-  // The operation `iree_codegen.ukernel.generic` always operates
-  // on a slice of the inputs to produce a slice of the output,
-  // so the loop here just needs to iterate from `0` to `size`,
-  // where `size` is the size of the slice to be executed by this call.
-  for (size_t i = 0; i < params->size_0; ++i) {
-    // The operation `iree_codegen.ukernel.generic` takes a slice of
-    // the inputs and outputs as operands. So the `pointer` and `offset`
-    // passed into this function represent the starting location of
-    // where to read the data from for this invocation of the function.
-    const float input_a = params->binding0[params->binding0_offset + i];
-    const float input_b = params->binding1[params->binding2_offset + i];
-    float output = 999;
-    size_t row_dim = params->size_0/i;
-    size_t inner_dim = params->size_1;
-    size_t col_dim = params->size_2;
-    aie_matmul_f32(
-	&input_a,
-	&input_b,
-	&output,
-	row_dim,
-	inner_dim,
-	col_dim);
-    printf( "%6.4lf", output );
+  fprintf(plugin->file, "processor_id=%u\n", params->processor_id);
+  if (params->processor_data) {
+    fprintf(plugin->file, "processor_data[0]=%" PRIX64 "\n",
+            params->processor_data[0]);
   }
+  /*
+  for (size_t i = 0; i < params->d1; ++i) {
+    params->binding2[params->binding2_offset + i] =
+        params->binding0[params->binding0_offset + i] *
+        params->binding1[params->binding2_offset + i];
+    fprintf(plugin->file, "mul[%zu:%zu](%g * %g = %g)\n", params->tid, i,
+            params->binding0[params->binding0_offset + i],
+            params->binding1[params->binding1_offset + i],
+            params->binding2[params->binding2_offset + i]);
+  }
+  */
+  printf( "size_0: %6.4zu", params->d0);
+  printf( "size_1: %6.4zu", params->d1);
+  printf( "size_2: %6.4zu", params->d2);
+  aie_matmul_f32(
+	params->binding0,
+        params->binding1,
+        params->binding2,
+	params->d0,
+	params->d1,
+	params->d2);
   return 0;
 }
 
