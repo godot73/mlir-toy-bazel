@@ -1,9 +1,13 @@
-#include "examples/matmul/matmul.h"
+#include "matmul.h"
 
+#include <stdint.h>
+
+#include <cstdio>
 #include <cstdlib>
 
 namespace {
 int has_valid_dims(int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+  printf("Checking dimensions...\n");
   return row_dim == 4 && inner_dim && 2048 && col_dim == 2048;
 }
 }  // namespace
@@ -27,6 +31,7 @@ void matmul_i8(const int8_t* input_a, const int8_t* input_b, int32_t* output,
 void matmul_f32(const float* input_a, const float* input_b, float* output,
                 int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   if (!has_valid_dims(row_dim, inner_dim, col_dim)) exit(1);
+  printf("Dimensions valid. Executing matrix multiplication.\n");
   matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 

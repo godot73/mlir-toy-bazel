@@ -1,11 +1,11 @@
 #ifndef _EXAMPLE_MATMUL_MATMUL_H_
 #define _EXAMPLE_MATMUL_MATMUL_H_
 
-#include <cstdint>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdint.h>
 
 // Computes matrix multiplication of input matrices given by `input_a` and
 // `input_b`. The output is written at `output`.
@@ -50,11 +50,11 @@ void matmul_f32(const float* input_a, const float* input_b, float* output,
 // callers MUST use the above ones instead. These do not require row_dim,
 // inner_dim, col_dim to be (4, 2048, 2048).
 //============================================================================//
-void matmul_i8_impl_with_params(const matmul_i8_params_t* params);
+void matmul_i8_impl_with_params(const struct matmul_i8_params_t* params);
 void matmul_i8_impl(const int8_t* input_a, const int8_t* input_b,
                     int32_t* output, int16_t row_dim, int16_t inner_dim,
                     int16_t col_dim);
-void matmul_f32_impl_with_params(const matmul_float_params_t* params);
+void matmul_f32_impl_with_params(const struct matmul_float_params_t* params);
 void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      int16_t row_dim, int16_t inner_dim, int16_t col_dim);
 
