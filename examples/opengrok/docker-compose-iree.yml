@@ -1,0 +1,24 @@
+version: "3"
+services:
+  opengrok-iree:
+    container_name: opengrok-iree
+    image: opengrok/docker:latest
+    ports:
+      - "9091:8080/tcp"
+    environment:
+      SYNC_PERIOD_MINUTES: '60'
+    volumes:
+       - '/repos/iree/:/opengrok/src/'  # source code
+       - '/opengrok/data/iree/:/opengrok/data/'  # index and other things for source code
+
+  opengrok-llvm:
+    container_name: opengrok-llvm
+    image: opengrok/docker:latest
+    ports:
+      - "9090:8080/tcp"
+    environment:
+      SYNC_PERIOD_MINUTES: '60'
+    volumes:
+       - '/repos/llvm-project/:/opengrok/src/'  # source code
+       - '/opengrok/data/llvm-project/:/opengrok/data/'  # index and other things for source code
+
