@@ -6,7 +6,7 @@ services:
     ports:
       - "9091:8080/tcp"
     environment:
-      SYNC_PERIOD_MINUTES: '60'
+      SYNC_PERIOD_MINUTES: '1400'
     volumes:
        - '/repos/iree/:/opengrok/src/'  # source code
        - '/opengrok/data/iree/:/opengrok/data/'  # index and other things for source code
@@ -17,7 +17,7 @@ services:
     ports:
       - "9090:8080/tcp"
     environment:
-      SYNC_PERIOD_MINUTES: '60'
+      SYNC_PERIOD_MINUTES: '1500'
     volumes:
        - '/repos/llvm-project/:/opengrok/src/'  # source code
        - '/opengrok/data/llvm-project/:/opengrok/data/'  # index and other things for source code
