@@ -28,11 +28,11 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
   } params_t;
   const params_t* params = (const params_t*)params_ptr;
   fprintf(plugin->file, "processor_id=%u\n", params->processor_id);
+  /*
   if (params->processor_data) {
     fprintf(plugin->file, "processor_data[0]=%" PRIX64 "\n",
             params->processor_data[0]);
   }
-  /*
   for (size_t i = 0; i < params->d1; ++i) {
     params->binding2[params->binding2_offset + i] =
         params->binding0[params->binding0_offset + i] *
