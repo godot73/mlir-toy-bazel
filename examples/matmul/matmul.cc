@@ -25,15 +25,13 @@ void matmul_f32_impl_with_params(const matmul_float_params_t* params) {
 
 void matmul_i8(const int8_t* input_a, const int8_t* input_b, int32_t* output,
                int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
-  // TODO: Resume the dimension checking line.
-//   if (!has_valid_dims(row_dim, inner_dim, col_dim)) exit(1);
+  if (!has_valid_dims(row_dim, inner_dim, col_dim)) exit(1);
   matmul_i8_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
 void matmul_f32(const float* input_a, const float* input_b, float* output,
                 int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
-  // TODO: Resume the dimension checking line.
-//   if (!has_valid_dims(row_dim, inner_dim, col_dim)) exit(1);
+  if (!has_valid_dims(row_dim, inner_dim, col_dim)) exit(1);
   matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
@@ -71,4 +69,9 @@ void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
       output[row * col_dim + col] = accumulated;
     }
   }
+}
+
+void accel_matmul_f32(const float* input_a, const float* input_b, float* output,
+                      int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+  matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }

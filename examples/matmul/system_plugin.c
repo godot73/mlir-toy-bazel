@@ -110,7 +110,7 @@ static iree_hal_executable_plugin_status_t system_plugin_resolve(
     bool is_optional =
         iree_hal_executable_plugin_import_is_optional(symbol_name);
     if (is_optional) ++symbol_name;
-    if (iree_hal_executable_plugin_strcmp(symbol_name, "matmul_f32") == 0) {
+    if (iree_hal_executable_plugin_strcmp(symbol_name, "accel_matmul_f32") == 0) {
       params->out_fn_ptrs[i] = matmul_f32_workgroup;
       params->out_fn_contexts[i] =
           plugin;  // passing plugin to each import call
