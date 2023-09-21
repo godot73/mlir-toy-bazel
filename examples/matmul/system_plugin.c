@@ -28,12 +28,14 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
   } params_t;
   const params_t* params = (const params_t*)params_ptr;
   fprintf(plugin->file, "processor_id=%u\n", params->processor_id);
+  fprintf(plugin->file, "thread_id=%zu\n", params->tid);
   
   /*
   if (params->processor_data) {
     fprintf(plugin->file, "processor_data[0]=%" PRIX64 "\n",
             params->processor_data[0]);
   }
+
   for (size_t i = 0; i < params->d1; ++i) {
     params->binding2[params->binding2_offset + i] =
         params->binding0[params->binding0_offset + i] *
@@ -46,8 +48,13 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
   */
   printf("size_0: %zu; size_1: %zu; size_2: %zu\n", params->d0, params->d1,
          params->d2);
-  accel_matmul_f32(params->binding0, params->binding1, params->binding2,
-                   params->d0, params->d1, params->d2);
+  /*
+  for (size_t i = 0; i < params->d1; ++i) {
+    fprintf(plugin->file, "a%zu=%g", i, params->binding0[i]);
+    fprintf(plugin->file, "b%zu=%g", i, params->binding1[i]);
+  }
+  */
+  accel_matmul_f32(&params->binding0[params->binding0_offset], &params->binding1[params->binding1_offset], &params->binding2[params->binding2_offset], params->d0, params->d1, params->d2);
   fprintf(plugin->file, "output=%g", params->binding2[params->binding2_offset]);
   return 0;
 }
