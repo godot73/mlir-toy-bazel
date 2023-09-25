@@ -50,19 +50,21 @@ void matmul_i8(const int8_t* input_a, const int8_t* input_b, int32_t* output,
 void matmul_f32(const float* input_a, const float* input_b, float* output,
                 size_t row_dim, size_t inner_dim, size_t col_dim);
 
-//============================================================================//
-// The functions below are defined only for the testing purposes. All other
-// callers MUST use the above ones instead. These do not require row_dim,
-// inner_dim, col_dim to be (4, 2048, 2048).
-//============================================================================//
 void matmul_i8_impl_with_params(const struct matmul_i8_params_t* params);
 void matmul_i8_impl(const int8_t* input_a, const int8_t* input_b,
                     int32_t* output, size_t row_dim, size_t inner_dim,
                     size_t col_dim);
+// This version supports strided inputs and outputs.
+// i.e. elem(input_a, i, j) == input_a[i * a_stride[0] + j * a_stride[1]]
+void matmul_i8_strided_impl(const int8_t* input_a, const int8_t* input_b,
+                            int32_t* output, size_t row_dim, size_t inner_dim,
+                            size_t col_dim, const size_t* a_stride,
+                            const size_t* b_stride,
+                            const size_t* output_stride);
+
 void matmul_f32_impl_with_params(const struct matmul_float_params_t* params);
 void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      size_t row_dim, size_t inner_dim, size_t col_dim);
-
 // This version supports strided inputs and outputs.
 // i.e. elem(input_a, i, j) == input_a[i * a_stride[0] + j * a_stride[1]]
 void matmul_f32_strided_impl(const float* input_a, const float* input_b,
