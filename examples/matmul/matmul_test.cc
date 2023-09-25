@@ -70,9 +70,9 @@ struct ParamsTmpl {
     for (int i = 0; i < row_dim * col_dim; ++i) output[i] = 0;
   }
 
-  int16_t row_dim;
-  int16_t inner_dim;
-  int16_t col_dim;
+  size_t row_dim;
+  size_t inner_dim;
+  size_t col_dim;
 
   InputType* input_a;
   InputType* input_b;
@@ -88,22 +88,22 @@ struct ParamsTmpl {
 
 // Overload matmul*() for unified typed tests.
 void matmul(const int8_t* input_a, const int8_t* input_b, int32_t* output,
-            int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+            size_t row_dim, size_t inner_dim, size_t col_dim) {
   matmul_i8(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
 void matmul_impl(const int8_t* input_a, const int8_t* input_b, int32_t* output,
-                 int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+                 size_t row_dim, size_t inner_dim, size_t col_dim) {
   matmul_i8_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
 void matmul(const float* input_a, const float* input_b, float* output,
-            int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+            size_t row_dim, size_t inner_dim, size_t col_dim) {
   matmul_f32(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
 void matmul_impl(const float* input_a, const float* input_b, float* output,
-                 int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
+                 size_t row_dim, size_t inner_dim, size_t col_dim) {
   matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
 }
 
@@ -276,8 +276,8 @@ TYPED_TEST(MatmulTestTmpl, CheckTestPass) {
   //  [0, 1, 2, 3, ..., 99, 0, 1, 2, 3, 99, ...],
   //  [0, 1, 2, 3, ..., 99, 0, 1, 2, 3, 99, ...],
   // ]
-  const int16_t row_dim = 4;
-  const int16_t inner_dim = 2048;
+  const size_t row_dim = 4;
+  const size_t inner_dim = 2048;
   std::vector<std::vector<typename TypeParam::InputType>> a;
   a.reserve(row_dim);
   for (int row = 0; row < row_dim; ++row) {
