@@ -57,10 +57,6 @@ void matmul_i8_impl(const int8_t* input_a, const int8_t* input_b,
 void matmul_f32_impl_with_params(const struct matmul_float_params_t* params);
 void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      int16_t row_dim, int16_t inner_dim, int16_t col_dim);
-// A temporary duplicate of matmul_f32_impl().
-// TODO: Remove once settled with matmul_f32().
-void accel_matmul_f32(const float* input_a, const float* input_b, float* output,
-                      int16_t row_dim, int16_t inner_dim, int16_t col_dim);
 
 #ifdef __cplusplus
 }  // extern "C"
