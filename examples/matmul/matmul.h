@@ -9,8 +9,12 @@ extern "C" {
 
 // Computes matrix multiplication of input matrices given by `input_a` and
 // `input_b`. The output is written at `output`.
-// It is the caller's responsibility to reserve the input and the output memory
-// buffers in valid sizes.
+// PRECONDITIONS:
+// - All versions below assume the `output` is propperly initialized, either
+// zeros or any previous values to be accumulated. In other words, it is the
+// caller's responsibility to initialize `output` beforehand.
+// - It is the caller's responsibility to reserve the input and the output
+// memory buffers in valid sizes.
 
 // The matrices should be shaped as follows.
 // - shape(input_a) = (row_dim, inner_dim)

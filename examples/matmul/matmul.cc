@@ -43,14 +43,12 @@ void matmul_i8_impl(const int8_t* input_a, const int8_t* input_b,
   // - shape(output) = (row_dim, col_dim)
   for (int64_t row = 0; row < row_dim; ++row) {
     for (int64_t col = 0; col < col_dim; ++col) {
-      int64_t accumulated = 0;
+      int32_t* output_elem = output + (row * col_dim + col);
       for (int64_t inner = 0; inner < inner_dim; ++inner) {
         // input_a[row][inner] * input_b[inner][col]
-        accumulated +=
+        *output_elem +=
             input_a[row * inner_dim + inner] * input_b[inner * col_dim + col];
       }
-      // output[row][col]
-      output[row * col_dim + col] = accumulated;
     }
   }
 }
@@ -59,14 +57,12 @@ void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   for (int64_t row = 0; row < row_dim; ++row) {
     for (int64_t col = 0; col < col_dim; ++col) {
-      float accumulated = 0;
+      float* output_elem = output + (row * col_dim + col);
       for (int64_t inner = 0; inner < inner_dim; ++inner) {
         // input_a[row][inner] * input_b[inner][col]
-        accumulated +=
+        *output_elem +=
             input_a[row * inner_dim + inner] * input_b[inner * col_dim + col];
       }
-      // output[row][col]
-      output[row * col_dim + col] = accumulated;
     }
   }
 }
