@@ -63,6 +63,14 @@ void matmul_f32_impl_with_params(const struct matmul_float_params_t* params);
 void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      size_t row_dim, size_t inner_dim, size_t col_dim);
 
+// This version supports strided inputs and outputs.
+// i.e. elem(input_a, i, j) == input_a[i * a_stride[0] + j * a_stride[1]]
+void matmul_f32_strided_impl(const float* input_a, const float* input_b,
+                             float* output, size_t row_dim, size_t inner_dim,
+                             size_t col_dim, const size_t* a_stride,
+                             const size_t* b_stride,
+                             const size_t* output_stride);
+
 #ifdef __cplusplus
 }  // extern "C"
 #endif
