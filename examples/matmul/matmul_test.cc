@@ -41,15 +41,21 @@ struct ParamsTmpl {
 
   ParamsTmpl(const std::vector<std::vector<InputType>>& a,
              const std::vector<std::vector<InputType>>& b,
-             std::vector<std::vector<OutputType>> out = {}) {
+             std::vector<std::vector<OutputType>> initial_output0 = {})
+      : initial_output(std::move(initial_output0)) {
     if (a[0].size() != b.size()) {
       LOG(FATAL) << "Invalid shapes for multiplication: " << a[0].size()
                  << " vs " << b.size();
     }
-    if (out.empty()) {
+    if (initial_output.empty()) {
       // Initialize output to zeros.
-      out = std::vector<std::vector<OutputType>>(
+      initial_output = std::vector<std::vector<OutputType>>(
           a.size(), std::vector<OutputType>(b[0].size(), 0));
+    } else {
+      if (a.size() != initial_output.size() ||
+          b[0].size() != initial_output[0].size()) {
+        LOG(FATAL) << "Invalid output shape for multiplication";
+      }
     }
 
     row_dim = a.size();
@@ -62,7 +68,7 @@ struct ParamsTmpl {
 
     FillValues<InputType>(a, input_a);
     FillValues<InputType>(b, input_b);
-    FillValues<OutputType>(out, output);
+    FillValues<OutputType>(initial_output, output);
   }
 
   ~ParamsTmpl() {
@@ -77,6 +83,7 @@ struct ParamsTmpl {
 
   void CleanOutputVector() {
     for (int i = 0; i < row_dim * col_dim; ++i) output[i] = 0;
+    FillValues<OutputType>(initial_output, output);
   }
 
   int16_t row_dim;
@@ -93,6 +100,8 @@ struct ParamsTmpl {
   matmul_float_params_t MakeParams(const matmul_float_params_t& params) {
     return params;
   }
+
+  std::vector<std::vector<OutputType>> initial_output;
 };
 
 // Overload matmul*() for unified typed tests.
@@ -267,6 +276,33 @@ TYPED_TEST(MatmulTestTmpl, Basic2x3x4) {
   matmul_impl_with_params(&params_struct);
   EXPECT_THAT(p.GetOutputVector(), ElementsAre(62, -68, 74, -80,  //
                                                143, -158, 173, -188));
+}
+
+TYPED_TEST(MatmulTestTmpl, Accumulated2x3x4) {
+  typename TestFixture::Params p({{1, 2, 3},  //
+                                  {4, 5, 6}},
+                                 {{5, -6, 7, -8},     //
+                                  {9, -10, 11, -12},  //
+                                  {13, -14, 15, -16}},
+                                 {{-1, 2, -3, 4},  //
+                                  {-5, 6, -7, 8}}
+
+  );
+  matmul_impl(p.input_a, p.input_b, p.output, p.row_dim, p.inner_dim,
+              p.col_dim);
+  EXPECT_THAT(p.GetOutputVector(), ElementsAre(61, -66, 71, -76,  //
+                                               138, -152, 166, -180));
+
+  p.CleanOutputVector();
+  auto params_struct = p.MakeParams({.input_a = p.input_a,
+                                     .input_b = p.input_b,
+                                     .output = p.output,
+                                     .row_dim = p.row_dim,
+                                     .inner_dim = p.inner_dim,
+                                     .col_dim = p.col_dim});
+  matmul_impl_with_params(&params_struct);
+  EXPECT_THAT(p.GetOutputVector(), ElementsAre(61, -66, 71, -76,  //
+                                               138, -152, 166, -180));
 }
 
 TYPED_TEST(MatmulTestTmpl, CheckTestFail) {
