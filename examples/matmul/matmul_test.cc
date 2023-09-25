@@ -26,9 +26,7 @@ template <typename ElemType>
 void FillValues(const std::vector<std::vector<ElemType>>& values,
                 ElemType* dst) {
   for (const auto& row : values) {
-    for (const auto& elem : row) {
-      *(dst++) = elem;
-    }
+    for (const auto& elem : row) *(dst++) = elem;
   }
 }
 
