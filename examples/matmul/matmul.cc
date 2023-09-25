@@ -70,8 +70,3 @@ void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
     }
   }
 }
-
-void accel_matmul_f32(const float* input_a, const float* input_b, float* output,
-                      int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
-  matmul_f32_impl(input_a, input_b, output, row_dim, inner_dim, col_dim);
-}
