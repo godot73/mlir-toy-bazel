@@ -22,6 +22,16 @@ struct Float32TypeWrapper {
   using OutputType = float;
 };
 
+template <typename ElemType>
+void FillValues(const std::vector<std::vector<ElemType>>& values,
+                ElemType* dst) {
+  for (const auto& row : values) {
+    for (const auto& elem : row) {
+      *(dst++) = elem;
+    }
+  }
+}
+
 // Container for inputs and outputs. TypeWraper may be one of Int8TypeWrapper or
 // Float32TypeWrapper.
 template <typename TypeWrapper>
@@ -30,11 +40,18 @@ struct ParamsTmpl {
   using OutputType = typename TypeWrapper::OutputType;
 
   ParamsTmpl(const std::vector<std::vector<InputType>>& a,
-             const std::vector<std::vector<InputType>>& b) {
+             const std::vector<std::vector<InputType>>& b,
+             std::vector<std::vector<OutputType>> out = {}) {
     if (a[0].size() != b.size()) {
       LOG(FATAL) << "Invalid shapes for multiplication: " << a[0].size()
                  << " vs " << b.size();
     }
+    if (out.empty()) {
+      // Initialize output to zeros.
+      out = std::vector<std::vector<OutputType>>(
+          a.size(), std::vector<OutputType>(b[0].size(), 0));
+    }
+
     row_dim = a.size();
     inner_dim = a[0].size();
     col_dim = b[0].size();
@@ -43,19 +60,11 @@ struct ParamsTmpl {
     input_b = new InputType[inner_dim * col_dim];
     output = new OutputType[row_dim * col_dim];
 
-    InputType* a_dst = input_a;
-    for (const auto& row : a) {
-      for (const auto elem : row) {
-        *(a_dst++) = elem;
-      }
-    }
-    InputType* b_dst = input_b;
-    for (const auto& row : b) {
-      for (const auto elem : row) {
-        *(b_dst++) = elem;
-      }
-    }
+    FillValues<InputType>(a, input_a);
+    FillValues<InputType>(b, input_b);
+    FillValues<OutputType>(out, output);
   }
+
   ~ParamsTmpl() {
     delete[] input_a;
     delete[] input_b;
