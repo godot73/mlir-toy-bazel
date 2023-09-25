@@ -59,14 +59,12 @@ void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
                      int16_t row_dim, int16_t inner_dim, int16_t col_dim) {
   for (int64_t row = 0; row < row_dim; ++row) {
     for (int64_t col = 0; col < col_dim; ++col) {
-      float accumulated = 0;
+      float* output_elem = output + (row * col_dim + col);
       for (int64_t inner = 0; inner < inner_dim; ++inner) {
         // input_a[row][inner] * input_b[inner][col]
-        accumulated +=
+        *output_elem +=
             input_a[row * inner_dim + inner] * input_b[inner * col_dim + col];
       }
-      // output[row][col]
-      output[row * col_dim + col] = accumulated;
     }
   }
 }
