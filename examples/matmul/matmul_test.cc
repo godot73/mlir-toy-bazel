@@ -133,6 +133,22 @@ void matmul_impl_with_params(const matmul_float_params_t* params) {
               params->inner_dim, params->col_dim);
 }
 
+void matmul_strided_impl(const int8_t* input_a, const int8_t* input_b,
+                         int32_t* output, size_t row_dim, size_t inner_dim,
+                         size_t col_dim, const size_t* a_stride,
+                         const size_t* b_stride, const size_t* output_stride) {
+  matmul_i8_strided_impl(input_a, input_b, output, row_dim, inner_dim, col_dim,
+                         a_stride, b_stride, output_stride);
+}
+
+void matmul_strided_impl(const float* input_a, const float* input_b,
+                         float* output, size_t row_dim, size_t inner_dim,
+                         size_t col_dim, const size_t* a_stride,
+                         const size_t* b_stride, const size_t* output_stride) {
+  matmul_f32_strided_impl(input_a, input_b, output, row_dim, inner_dim, col_dim,
+                          a_stride, b_stride, output_stride);
+}
+
 template <typename T>
 std::vector<T> Flatten(const std::vector<std::vector<T>>& mat) {
   std::vector<T> ret;
@@ -338,6 +354,50 @@ TYPED_TEST(MatmulTestTmpl, CheckTestPass) {
 
   // Verify
   EXPECT_THAT(p.GetOutputVector(), ElementsAreArray(Flatten(a)));
+}
+
+TYPED_TEST(MatmulTestTmpl, TestStriding) {
+  // In this test with C = A x B, B is tiled by colum; i.e. B = [B_left,
+  // B_right] where dim(A) = (2, 3), dim(B) = (3, 4), dim(B_left) = dim(B_right)
+  // = (3, 2).
+  const size_t row_dim = 2;
+  const size_t inner_dim = 3;
+  const size_t col_dim = 4;
+
+  using InputType = typename TypeParam::InputType;
+  using OutputType = typename TypeParam::OutputType;
+
+  const std::vector<InputType> input_a = {1, 2, 3,  //
+                                          4, 5, 6};
+  const std::vector<InputType> input_b = {5,  -6,  7,  -8,   //
+                                          9,  -10, 11, -12,  //
+                                          13, -14, 15, -16};
+  std::vector<OutputType> output(row_dim * col_dim, 0);
+
+  // Compute A * B_left.
+  // NOTE
+  // - col_dim becomes col_dim / 2.
+  // - b_stride[0] == output_stride[0] == col_dim.
+  matmul_strided_impl(input_a.data(), input_b.data(), output.data(), row_dim,
+                      inner_dim, col_dim / 2,
+                      /*a_stride=*/std::vector<size_t>{inner_dim, 1}.data(),
+                      /*b_stride=*/std::vector<size_t>{col_dim, 1}.data(),
+                      /*output_stride=*/std::vector<size_t>{col_dim, 1}.data());
+  // Compute A * B_right.
+  // NOTE
+  // - col_dim becomes col_dim / 2.
+  // - b_stride[0] == output_stride[0] == col_dim.
+  // - input_b and output are shifted.
+  matmul_strided_impl(input_a.data(), input_b.data() + col_dim / 2,
+                      output.data() + col_dim / 2, row_dim, inner_dim,
+                      col_dim / 2,
+                      /*a_stride=*/std::vector<size_t>{inner_dim, 1}.data(),
+                      /*b_stride=*/std::vector<size_t>{col_dim, 1}.data(),
+                      /*output_stride=*/std::vector<size_t>{col_dim, 1}.data());
+
+  // output is the same as A * B.
+  EXPECT_THAT(output, ElementsAre(62, -68, 74, -80,  //
+                                  143, -158, 173, -188));
 }
 
 }  // namespace
