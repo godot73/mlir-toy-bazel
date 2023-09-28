@@ -53,7 +53,7 @@ void matmul_strided_t_impl(const InputType* input_a, const InputType* input_b,
       for (int64_t inner = 0; inner < inner_dim; ++inner) {
         // input_a[row][inner] * input_b[col][inner]
         *output_elem += input_a[row * a_stride[0] + inner * a_stride[1]] *
-                        input_b[col * b_stride[1] + inner * b_stride[0]];
+                        input_b[col * b_stride[0] + inner * b_stride[1]];
       //printf("%f\t", output_elem[0]);
       }
     }

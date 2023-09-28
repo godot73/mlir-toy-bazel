@@ -9,7 +9,7 @@ typedef struct {
   FILE* file;
 } system_plugin_t;
 
-static int matmul_f32_workgroup(void* params_ptr, void* context,
+static int matmul_f32_t_workgroup(void* params_ptr, void* context,
                                 void* reserved) {
   system_plugin_t* plugin = (system_plugin_t*)context;
   typedef struct {
@@ -54,7 +54,7 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     printf("\n");
     printf("a[%zu]=", i);
     for (size_t j = 0; j < params->d1; ++j) {
-      fprintf(plugin->file, "%g\t", params->binding0[(i*params->d1)+j]);
+      fprintf(plugin->file, "%g\t", params->binding0[params->binding0_offset+(i*params->d1)+j]);
     }
   }
   printf("\n \n");
@@ -64,11 +64,10 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     printf("\n");
     printf("b[%zu]=", i);
     for (size_t j = 0; j < params->d1; ++j) {
-      fprintf(plugin->file, "%g\t", params->binding1[(i*params->d1)+j]);
+      fprintf(plugin->file, "%g\t", params->binding1[params->binding1_offset+(i*params->d1)+j]);
     }
   }
   printf("\n \n");
-  
   matmul_f32_t_impl(&params->binding0[params->binding0_offset],
                   &params->binding1[params->binding1_offset],
                   &params->binding2[params->binding2_offset], params->d0,
@@ -79,7 +78,7 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     printf("\n");
     printf("out[%zu]=", i);
     for (size_t j = 0; j < params->d2; ++j) {
-      fprintf(plugin->file, "%g\t", params->binding2[(i*params->d2)+j]);
+      fprintf(plugin->file, "%g\t", params->binding2[params->binding2_offset+(i*params->d2)+j]);
     }
   }
   printf("\n \n");
@@ -146,9 +145,9 @@ static iree_hal_executable_plugin_status_t system_plugin_resolve(
     bool is_optional =
         iree_hal_executable_plugin_import_is_optional(symbol_name);
     if (is_optional) ++symbol_name;
-    if (iree_hal_executable_plugin_strcmp(symbol_name, "accel_matmul_f32") ==
+    if (iree_hal_executable_plugin_strcmp(symbol_name, "accel_matmul_t_f32") ==
         0) {
-      params->out_fn_ptrs[i] = matmul_f32_workgroup;
+      params->out_fn_ptrs[i] = matmul_f32_t_workgroup;
       params->out_fn_contexts[i] =
           plugin;  // passing plugin to each import call
     } else {
