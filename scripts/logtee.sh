@@ -9,10 +9,10 @@
 #   > ls ~ | logtee foo
 #   > ...
 #
-# The latest log is symlinked as:
+# The teed logs are stored as:
+#   $LOGTEE_DIR/foo-YYYYMMDD-hhmmss.log
+# In particular, the latest log is symlinked as:
 #   $LOGTEE_DIR/foo.log
-# The older logs are available as:
-#   $LOGTEE_DIR/foo-YYYYMMDD-hhmmss
 
 function logtee() {
   DIR=${LOGTEE_DIR:-}
