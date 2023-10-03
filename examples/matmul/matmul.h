@@ -24,6 +24,7 @@ extern "C" {
 // where (row_dim, inner_dim, col_dim) MUST be (4, 2048, 2048). Otherwise, they
 // exit with code 1.
 
+
 struct matmul_i8_params_t {
   const int8_t* input_a;
   const int8_t* input_b;
@@ -72,6 +73,7 @@ void matmul_f32_strided_impl(const float* input_a, const float* input_b,
                              size_t col_dim, const size_t* a_stride,
                              const size_t* b_stride,
                              const size_t* output_stride);
+
 
 #ifdef __cplusplus
 }  // extern "C"
