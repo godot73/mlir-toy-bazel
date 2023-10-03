@@ -44,7 +44,7 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
             params->binding1[params->binding1_offset + i],
             params->binding2[params->binding2_offset + i]);
   }
-  */
+
   printf("size_0: %zu; size_1: %zu; size_2: %zu\n", params->d0, params->d1,
          params->d2);
   
@@ -68,11 +68,12 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     }
   }
   printf("\n \n");
+  */
   matmul_f32_impl(&params->binding0[params->binding0_offset],
                   &params->binding1[params->binding1_offset],
                   &params->binding2[params->binding2_offset], params->d0,
                   params->d1, params->d2);
-
+  /*
   printf("Output size: %zu x %zu", params->d0, params->d2);
   for (size_t i = 0; i < params->d0; ++i) {
     printf("\n");
@@ -82,6 +83,7 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     }
   }
   printf("\n \n");
+  */
   return 0;
 }
 
