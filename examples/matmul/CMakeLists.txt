@@ -1,6 +1,10 @@
 set(IREE_SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../../third_party/iree)
 
-add_library(matmul SHARED matmul.cc)
+if (WIN32)
+  add_library(matmul matmul.cc)
+else()
+  add_library(matmul SHARED matmul.cc)
+endif()
 
 add_library(system_plugin SHARED system_plugin.c)
 
@@ -21,4 +25,3 @@ set_target_properties(system_plugin
 target_link_libraries(system_plugin matmul)
 
 add_gtest(matmul_test matmul_test.cc matmul absl::log)
-
