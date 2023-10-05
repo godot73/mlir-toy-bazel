@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <vector>
+#include <inttypes.h>
 
 namespace {
 bool has_valid_dims(size_t row_dim, size_t inner_dim, size_t col_dim) {
@@ -21,6 +22,7 @@ void matmul_strided_impl(const InputType* input_a, const InputType* input_b,
   // - shape(input_a) = (row_dim, inner_dim)
   // - shape(input_b) = (inner_dim, col_dim)
   // - shape(output) = (row_dim, col_dim)
+
   for (int64_t row = 0; row < row_dim; ++row) {
     for (int64_t col = 0; col < col_dim; ++col) {
       OutputType* output_elem =
@@ -29,6 +31,30 @@ void matmul_strided_impl(const InputType* input_a, const InputType* input_b,
         // input_a[row][inner] * input_b[inner][col]
         *output_elem += input_a[row * a_stride[0] + inner * a_stride[1]] *
                         input_b[inner * b_stride[0] + col * b_stride[1]];
+      }
+    }
+  }
+}
+
+template <typename InputType, typename OutputType>
+void matmul_strided_t_impl(const InputType* input_a, const InputType* input_b,
+                         OutputType* output, size_t row_dim, size_t inner_dim,
+                         size_t col_dim, const size_t* a_stride,
+                         const size_t* b_stride, const size_t* output_stride) {
+  // - shape(input_a) = (row_dim, inner_dim)
+  // - shape(input_b) = (inner_dim, col_dim)
+  // - shape(output) = (row_dim, col_dim)
+
+  for (int64_t row = 0; row < row_dim; ++row) {
+    //printf("\n");
+    for (int64_t col = 0; col < col_dim; ++col) {
+      OutputType* output_elem =
+          output + (row * output_stride[0] + col * output_stride[1]);
+      for (int64_t inner = 0; inner < inner_dim; ++inner) {
+        // input_a[row][inner] * input_b[col][inner]
+        *output_elem += input_a[row * a_stride[0] + inner * a_stride[1]] *
+                        input_b[col * b_stride[0] + inner * b_stride[1]];
+      //printf("%f\t", output_elem[0]);
       }
     }
   }
@@ -87,12 +113,31 @@ void matmul_f32_impl(const float* input_a, const float* input_b, float* output,
       /*output_stride=*/std::vector<size_t>{col_dim, 1}.data());
 }
 
+void matmul_f32_t_impl(const float* input_a, const float* input_b, float* output,
+                     size_t row_dim, size_t inner_dim, size_t col_dim) {
+  matmul_strided_t_impl<float, float>(
+      input_a, input_b, output, row_dim, inner_dim, col_dim,
+      /*a_stride=*/std::vector<size_t>{inner_dim, 1}.data(),
+      /*b_stride=*/std::vector<size_t>{inner_dim, 1}.data(),
+      /*output_stride=*/std::vector<size_t>{col_dim, 1}.data());
+}
+
 void matmul_f32_strided_impl(const float* input_a, const float* input_b,
                              float* output, size_t row_dim, size_t inner_dim,
                              size_t col_dim, const size_t* a_stride,
                              const size_t* b_stride,
                              const size_t* output_stride) {
   matmul_strided_impl<float, float>(input_a, input_b, output, row_dim,
+                                    inner_dim, col_dim, a_stride, b_stride,
+                                    output_stride);
+}
+
+void matmul_f32_strided_t_impl(const float* input_a, const float* input_b,
+                             float* output, size_t row_dim, size_t inner_dim,
+                             size_t col_dim, const size_t* a_stride,
+                             const size_t* b_stride,
+                             const size_t* output_stride) {
+  matmul_strided_t_impl<float, float>(input_a, input_b, output, row_dim,
                                     inner_dim, col_dim, a_stride, b_stride,
                                     output_stride);
 }
