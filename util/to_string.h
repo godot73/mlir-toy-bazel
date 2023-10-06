@@ -1,3 +1,6 @@
+#ifndef _UTIL_TO_STRING_H_
+#define _UTIL_TO_STRING_H_
+
 #include <map>
 #include <set>
 #include <string>
@@ -88,4 +91,4 @@ std::string IterableToString(const T& vs) {
 
 }  // namespace sungcho
 
-
+#endif  // _UTIL_TO_STRING_H_
