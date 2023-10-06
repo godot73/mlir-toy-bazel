@@ -12,10 +12,11 @@ git_repository(
 )
 
 # abseil-cpp
-git_repository(
+new_local_repository(
     name = "absl",
-    remote = "https://github.com/abseil/abseil-cpp",
-    branch = "lts_2023_01_25",
+    build_file_content = "# empty",
+    # Or wherever your submodule is located.
+    path = "third_party/abseil-cpp",
 )
 
 # Google Test
