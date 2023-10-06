@@ -20,7 +20,6 @@ cc_test(
 
 cc_library(
     name = "util",
-    srcs = ["util.cc"],
     hdrs = ["util.h"],
     deps = [],
 )
@@ -38,7 +37,6 @@ cc_test(
 
 cc_library(
     name = "matrix_util",
-    srcs = ["matrix_util.cc"],
     hdrs = ["matrix_util.h"],
     deps = [
       ":to_string",
