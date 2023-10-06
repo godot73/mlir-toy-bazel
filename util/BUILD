@@ -36,3 +36,20 @@ cc_test(
     ],
 )
 
+cc_library(
+    name = "matrix_util",
+    srcs = ["matrix_util.cc"],
+    hdrs = ["matrix_util.h"],
+    deps = [
+      ":to_string",
+    ],
+)
+
+cc_test(
+    name = "matrix_util_test",
+    srcs = ["matrix_util_test.cc"],
+    deps = [
+        ":matrix_util",
+        "@googletest//:gtest_main",
+    ],
+)

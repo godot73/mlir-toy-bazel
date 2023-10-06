@@ -55,7 +55,7 @@ std::string ToString(const std::set<T>& vs) {
 
 template <typename First, typename Second>
 std::string ToString(const std::pair<First, Second>& p) {
-  return absl::StrFormat("[%s,%s]", ToString(p.first), ToString(p.second));
+  return absl::StrFormat("{%s,%s}", ToString(p.first), ToString(p.second));
 }
 
 template <typename Key, typename Value>
@@ -67,14 +67,14 @@ template <typename... T>
 std::string ToString(const std::tuple<T...>& t) {
   std::vector<std::string> ss;
   ForEachInTuple(t, [&](const auto& v) { ss.push_back(ToString(v)); });
-  return absl::StrCat("[", absl::StrJoin(ss, ","), "]");
+  return absl::StrCat("{", absl::StrJoin(ss, ","), "}");
 }
 
 namespace internal {
 
 template <typename T>
 std::string IterableToString(const T& vs) {
-  std::string ret = "[";
+  std::string ret = "{";
   bool first = true;
   for (const auto& v : vs) {
     if (!first) {
@@ -83,7 +83,7 @@ std::string IterableToString(const T& vs) {
     ret += ToString(v);
     first = false;
   }
-  ret += "]";
+  ret += "}";
   return ret;
 }
 
