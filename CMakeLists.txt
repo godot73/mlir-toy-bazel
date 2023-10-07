@@ -18,12 +18,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 # Abseil
-FetchContent_Declare(
-  abseil
-  GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-  GIT_TAG        20230125.3
-)
-FetchContent_MakeAvailable(abseil)
+add_subdirectory(third_party/abseil-cpp)
 
 enable_testing()
 
