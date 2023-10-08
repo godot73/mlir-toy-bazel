@@ -1,5 +1,5 @@
-#ifndef _UTIL_UTIL_H_
-#define _UTIL_UTIL_H_
+#ifndef _UTIL_BASE_UTIL_H_
+#define _UTIL_BASE_UTIL_H_
 
 #include <cstdint>
 #include <tuple>
@@ -31,5 +31,5 @@ void ForEachInTuple(const std::tuple<Ts...>& t, Func func) {
 
 }  // namespace sungcho
 
-#endif  // _UTIL_UTIL_H_
+#endif  // _UTIL_BASE_UTIL_H_
 

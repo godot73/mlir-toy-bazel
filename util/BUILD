@@ -1,34 +1,14 @@
 cc_library(
-    name = "to_string",
-    hdrs = ["to_string.h"],
-    visibility = ["//visibility:public"],
-    deps = [
-        ":util",
-        "@absl//absl/strings",
-        "@absl//absl/strings:str_format",
-    ],
-)
-
-cc_test(
-    name = "to_string_test",
-    srcs = ["to_string_test.cc"],
-    deps = [
-        ":to_string",
-        "@googletest//:gtest_main",
-    ],
-)
-
-cc_library(
-    name = "util",
-    hdrs = ["util.h"],
+    name = "base_util",
+    hdrs = ["base_util.h"],
     deps = [],
 )
 
 cc_test(
-    name = "util_test",
-    srcs = ["util_test.cc"],
+    name = "base_util_test",
+    srcs = ["base_util_test.cc"],
     deps = [
-        ":util",
+        ":base_util",
         "@absl//absl/log",
         "@absl//absl/strings",
         "@googletest//:gtest_main",
@@ -48,6 +28,26 @@ cc_test(
     srcs = ["matrix_util_test.cc"],
     deps = [
         ":matrix_util",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "to_string",
+    hdrs = ["to_string.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":base_util",
+        "@absl//absl/strings",
+        "@absl//absl/strings:str_format",
+    ],
+)
+
+cc_test(
+    name = "to_string_test",
+    srcs = ["to_string_test.cc"],
+    deps = [
+        ":to_string",
         "@googletest//:gtest_main",
     ],
 )
