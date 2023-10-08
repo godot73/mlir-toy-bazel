@@ -3,14 +3,14 @@
 
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "util/to_string.h"
 
 namespace sungcho {
 
 template <typename Elem>
-std::string PrintMatrixRow(const Elem* elems, int32_t size,
-                           int32_t print_limit) {
+std::string PrintVector(const Elem* elems, int32_t size, int32_t print_limit) {
   std::string ret = "[";
   for (int32_t i = 0; i < size; ++i) {
     if (i > 0) {
@@ -24,6 +24,11 @@ std::string PrintMatrixRow(const Elem* elems, int32_t size,
   }
   ret += "]";
   return ret;
+}
+
+template <typename Elem>
+std::string PrintVector(const std::vector<Elem>& elems, int32_t print_limit) {
+  return PrintVector(elems.data(), elems.size(), print_limit);
 }
 
 template <typename Elem>
