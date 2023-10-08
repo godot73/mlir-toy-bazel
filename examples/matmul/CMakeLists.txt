@@ -24,4 +24,7 @@ set_target_properties(examples_matmul_system_plugin
 
 target_link_libraries(examples_matmul_system_plugin examples_matmul_matmul)
 
-add_gtest(matmul_test matmul_test.cc examples_matmul_matmul absl::log)
+add_gtest(
+  examples_matmul_matmul_test
+  matmul_test.cc
+  examples_matmul_matmul absl::log)
