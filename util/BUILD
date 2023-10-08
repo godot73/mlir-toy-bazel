@@ -1,3 +1,15 @@
+# PUBLIC
+cc_library(
+    name = "util",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":base_util",
+        ":matrix_util",
+        ":to_string",
+    ],
+)
+
+# PRIVATE
 cc_library(
     name = "base_util",
     hdrs = ["base_util.h"],
