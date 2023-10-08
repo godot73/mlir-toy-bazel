@@ -5,14 +5,14 @@
 namespace sungcho {
 namespace {
 
-TEST(PrintMatrixRowTest, PrintAll) {
+TEST(PrintVectorTest, PrintAll) {
   const std::vector<float> vs = {1, 2, 3, 4, 5};
   EXPECT_EQ(PrintVector(vs, /*print_limit=*/10), "[1 2 3 4 5]");
   EXPECT_EQ(PrintVector(vs.data(), vs.size(), /*print_limit=*/10),
             "[1 2 3 4 5]");
 }
 
-TEST(PrintMatrixRowTest, Truncated) {
+TEST(PrintVectorTest, Truncated) {
   const std::vector<float> vs = {1, 2, 3, 4, 5};
   EXPECT_EQ(PrintVector(vs, /*print_limit=*/3), "[1 2 3 ...]");
   EXPECT_EQ(PrintVector(vs.data(), vs.size(), /*print_limit=*/3),
