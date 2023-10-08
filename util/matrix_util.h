@@ -10,13 +10,14 @@
 namespace sungcho {
 
 template <typename Elem>
-std::string PrintVector(const Elem* elems, int32_t size, int32_t print_limit) {
+std::string PrintVector(const Elem* elems, int32_t size,
+                        int32_t print_limit = 0) {
   std::string ret = "[";
   for (int32_t i = 0; i < size; ++i) {
     if (i > 0) {
       ret += " ";
     }
-    if (i >= print_limit) {
+    if (print_limit > 0 && i >= print_limit) {
       ret += "...";
       break;
     }
@@ -27,18 +28,19 @@ std::string PrintVector(const Elem* elems, int32_t size, int32_t print_limit) {
 }
 
 template <typename Elem>
-std::string PrintVector(const std::vector<Elem>& elems, int32_t print_limit) {
+std::string PrintVector(const std::vector<Elem>& elems,
+                        int32_t print_limit = 0) {
   return PrintVector(elems.data(), elems.size(), print_limit);
 }
 
 template <typename Elem>
 std::string PrintMatrix(const Elem* elems, std::tuple<int32_t, int32_t> dims,
-                        int32_t print_limit) {
+                        int32_t print_limit = 0) {
   std::string ret = "[";
   const int32_t num_rows = std::get<0>(dims);
   const int32_t num_cols = std::get<1>(dims);
   for (int32_t row = 0; row < num_rows; ++row) {
-    if (row >= print_limit) {
+    if (print_limit > 0 && row >= print_limit) {
       ret += "...\n";
       break;
     }
