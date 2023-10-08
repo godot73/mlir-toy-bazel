@@ -42,7 +42,7 @@ std::string PrintMatrix(const Elem* elems, std::tuple<int32_t, int32_t> dims,
       ret += "...\n";
       break;
     }
-    ret += PrintMatrixRow(&elems[num_cols * row], num_cols, print_limit);
+    ret += PrintVector(&elems[num_cols * row], num_cols, print_limit);
     ret += "\n";
   }
   ret += "]";
