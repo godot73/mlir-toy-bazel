@@ -1,17 +1,18 @@
 # PRIVATE
 
 # matrix_util
-add_library(_util_matrix_util INTERFACE)
-target_link_libraries(_util_matrix_util INTERFACE _util_to_string)
+add_library(util_matrix_util INTERFACE)
+target_link_libraries(util_matrix_util INTERFACE util_to_string)
+add_gtest(util_matrix_util_test matrix_util_test.cc util_matrix_util)
 
 # to_string
-add_library(_util_to_string INTERFACE)
-target_link_libraries(_util_to_string INTERFACE absl::log absl::strings)
-add_gtest(_util_to_string_test to_string_test.cc _util_to_string)
+add_library(util_to_string INTERFACE)
+target_link_libraries(util_to_string INTERFACE absl::log absl::strings)
+add_gtest(util_to_string_test to_string_test.cc util_to_string)
 
 # util
-add_library(_util_util INTERFACE)
-add_gtest(_util_util_test util_test.cc _util_util absl::log)
+add_library(util_util INTERFACE)
+add_gtest(util_util_test util_test.cc util_util absl::log)
 
 ## PUBLIC
 add_library(util INTERFACE)
@@ -19,8 +20,8 @@ add_library(util INTERFACE)
 target_link_libraries(
   util INTERFACE
 
-  _util_matrix_util
-  _util_to_string
-  _util_util
+  util_matrix_util
+  util_to_string
+  util_util
 )
 
