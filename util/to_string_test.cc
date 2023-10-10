@@ -13,6 +13,10 @@ TEST(ToStringTest, String) {
   EXPECT_EQ(ToString(s), "\"hello\"");
 }
 
+TEST(ToStringTest, CstrLiteral) {
+  EXPECT_EQ(ToString("hello"), "\"hello\"");
+}
+
 TEST(ToStringTest, VectorInt32) {
   const std::vector<int32_t> vs = {-2, -1, 0, 1, 2};
   EXPECT_EQ(ToString(vs), "{-2,-1,0,1,2}");

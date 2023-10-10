@@ -21,9 +21,15 @@ std::string IterableToString(const T& vs);
 template <typename T>
 std::string ToString(const T& t) {
   // Specialization hack without using concepts (available from C++20)
+  // Matches ToString("hello")
+  if constexpr (std::is_same<char*, typename std::decay<T>::type>::value) {
+    return absl::StrCat("\"", t, "\"");
+  }
+  // Matches ToString(123) or ToString(1.23)
   if constexpr (std::is_arithmetic<T>::value) {
     return absl::StrCat(t);
   }
+  // Falll back to hex dump.
   const auto size = sizeof(t);
   const uint8_t* head = reinterpret_cast<const uint8_t*>(&t);
   std::string ret;
@@ -38,10 +44,7 @@ std::string ToString(const char* const& v) {
   return absl::StrCat("\"", v, "\"");
 }
 
-template <>
-std::string ToString(const std::string& v) {
-  return ToString(v.c_str());
-}
+std::string ToString(const std::string& v) { return ToString(v.c_str()); }
 
 template <typename T>
 std::string ToString(const std::vector<T>& vs) {
