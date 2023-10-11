@@ -13,9 +13,7 @@ TEST(ToStringTest, String) {
   EXPECT_EQ(ToString(s), "\"hello\"");
 }
 
-TEST(ToStringTest, CstrLiteral) {
-  EXPECT_EQ(ToString("hello"), "\"hello\"");
-}
+TEST(ToStringTest, CstrLiteral) { EXPECT_EQ(ToString("hello"), "\"hello\""); }
 
 TEST(ToStringTest, VectorInt32) {
   const std::vector<int32_t> vs = {-2, -1, 0, 1, 2};
@@ -62,10 +60,20 @@ TEST(ToStringTest, SetInt32) {
   EXPECT_EQ(ToString(vs), "{-2,-1,0,1,2}");
 }
 
+TEST(ToStringTest, UnorderedSetInt32) {
+  const std::unordered_set<int32_t> vs = {-2};
+  EXPECT_EQ(ToString(vs), "{-2}");
+}
+
 TEST(ToStringTest, MapInt32String) {
   const std::map<int32_t, std::string> kvs = {
       {1, "One"}, {2, "Two"}, {3, "Three"}};
   EXPECT_EQ(ToString(kvs), R"({{1,"One"},{2,"Two"},{3,"Three"}})");
+}
+
+TEST(ToStringTest, UnorderedMapInt32String) {
+  const std::unordered_map<int32_t, std::string> kvs = {{1, "One"}};
+  EXPECT_EQ(ToString(kvs), R"({{1,"One"}})");
 }
 
 TEST(ToStringTest, PairIntString) {

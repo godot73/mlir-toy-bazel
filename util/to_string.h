@@ -4,6 +4,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "absl/strings/str_cat.h"
@@ -56,6 +58,11 @@ std::string ToString(const std::set<T>& vs) {
   return internal::IterableToString(vs);
 }
 
+template <typename T>
+std::string ToString(const std::unordered_set<T>& vs) {
+  return internal::IterableToString(vs);
+}
+
 template <typename First, typename Second>
 std::string ToString(const std::pair<First, Second>& p) {
   return absl::StrFormat("{%s,%s}", ToString(p.first), ToString(p.second));
@@ -63,6 +70,11 @@ std::string ToString(const std::pair<First, Second>& p) {
 
 template <typename Key, typename Value>
 std::string ToString(const std::map<Key, Value>& kvs) {
+  return internal::IterableToString(kvs);
+}
+
+template <typename Key, typename Value>
+std::string ToString(const std::unordered_map<Key, Value>& kvs) {
   return internal::IterableToString(kvs);
 }
 
