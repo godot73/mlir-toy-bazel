@@ -46,7 +46,9 @@ std::string ToString(const char* const& v) {
   return absl::StrCat("\"", v, "\"");
 }
 
-std::string ToString(const std::string& v) { return ToString(v.c_str()); }
+inline std::string ToString(const std::string& v) {
+  return ToString(v.c_str());
+}
 
 template <typename T>
 std::string ToString(const std::vector<T>& vs) {
