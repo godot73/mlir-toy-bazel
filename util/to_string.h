@@ -24,7 +24,9 @@ template <typename T>
 std::string ToString(const T& t) {
   // Specialization hack without using concepts (available from C++20)
   // Matches ToString("hello")
-  if constexpr (std::is_same<char*, typename std::decay<T>::type>::value) {
+  if constexpr (std::is_same<const char*,
+                             typename std::decay<T>::type>::value ||
+                std::is_same<char*, typename std::decay<T>::type>::value) {
     return absl::StrCat("\"", t, "\"");
   }
   // Matches ToString(123) or ToString(1.23)
@@ -39,11 +41,6 @@ std::string ToString(const T& t) {
     ret += absl::StrFormat("<%02X>", *(head + i));
   }
   return ret;
-}
-
-template <>
-std::string ToString(const char* const& v) {
-  return absl::StrCat("\"", v, "\"");
 }
 
 inline std::string ToString(const std::string& v) {
