@@ -1,8 +1,8 @@
 ## PUBLIC
-add_library(util INTERFACE)
+add_library(sungcho_util INTERFACE)
 
 target_link_libraries(
-  util INTERFACE
+  sungcho_util INTERFACE
 
   util_base_util
   util_matrix_util
