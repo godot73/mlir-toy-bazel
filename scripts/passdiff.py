@@ -1,32 +1,46 @@
+#!/usr/bin/env python3
 """A script for diffing between IRs before and after passes.
 
-Prerequisite: Generate a compilation log first by running:
+Prerequisite 0: Symlink to this file from somehwer in $PATH.
+
+Prerequisite 1: Generate a compilation log first by running:
     - iree-compile [.mlir] -o [output.vmfb] \
             --mlir-print-ir-before-all \
             --mlir-print-ir-after-all \
             --mlir-elide-elementsattrs-if-larger=32 \
             [other flags] > ~/log/output.log
 
-Usage:
-    python passdiff.py [--dryrun] --input=~/log/output.log
+Usage 1: To generate diffs, run:
+    passdiff.py --mode=generate [--dryrun] --input=~/log/output.log
+
+Usage 2: To view diff, change to a diff directory and run:
+    passidff.py --input=[prefix to a diff pass dir; e.g. 000]
 """
 
 import argparse
 import collections
 import datetime
+import os
 from pathlib import Path
 import re
 import subprocess
+import sys
 from typing import Iterable, Optional, Tuple
 
 DIFFTOOL = 'tkdiff'
 DIFFDIR = '~/passdiff'
+
+_MODE_GENERATE = 'generate'
+_MODE_VIEWDIFF = 'viewdiff'
 
 _DUMP_BEFORE_PATTERN = re.compile(r'IR Dump Before .*\((.*)\)')
 _DUMP_AFTER_PATTERN = re.compile(r'IR Dump After .*\((.*)\)')
 
 _BEFORE_BLOCK = 'before'
 _AFTER_BLOCK = 'after'
+
+_BEFORE_FILENAME = 'before.mlir'
+_AFTER_FILENAME = 'after.mlir'
 
 
 class PassList(object):
@@ -124,8 +138,8 @@ class BlockGenerator(object):
         print('Saving at {}'.format(path_dir))
         if not self.args.dryrun:
             Path.mkdir(path_dir, parents=True)
-            self.save_file(path_dir / 'before.mlir', before_block)
-            self.save_file(path_dir / 'after.mlir', after_block)
+            self.save_file(path_dir / _BEFORE_FILENAME, before_block)
+            self.save_file(path_dir / _AFTER_FILENAME, after_block)
 
     def save_file(self, fullpath: Path, lines: Iterable[str]) -> None:
         with open(fullpath, 'w') as outfile:
@@ -133,23 +147,49 @@ class BlockGenerator(object):
                 outfile.write(f'{line}\n')
 
 
-# TODO: Implement the diff view mode.
-def rundiff(before_filename: str, after_filename: str):
-    subprocess.run([DIFFTOOL, before_filename, after_filename])
+def viewdiff(dir_prefix: str) -> None:
+    diffdir = find_diffdir(dir_prefix)
+    if diffdir is None:
+        print('Cannot find a subdirectory starting with {}'.format(dir_prefix),
+              file=sys.stderr)
+        exit(1)
+    print('Selected dir = {}'.format(diffdir))
+    diffpath = Path.cwd() / diffdir
+    rundiff(diffpath / _BEFORE_FILENAME, diffpath / _AFTER_FILENAME)
+
+
+def find_diffdir(dir_prefix: str) -> Optional[str]:
+    assert dir_prefix
+    dirs = sorted(os.listdir(Path.cwd()))
+    for d in dirs:
+        if d.startswith(dir_prefix):
+            return d
+    return None
+
+
+def rundiff(before_filepath: str, after_filepath: str):
+    subprocess.run([DIFFTOOL, before_filepath, after_filepath])
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument('--mode',
+                        help='Either generate or viewdiff (default)',
+                        type=str,
+                        choices=[_MODE_GENERATE, _MODE_VIEWDIFF],
+                        default=_MODE_VIEWDIFF)
     parser.add_argument(
         '--input',
-        help='Input log file containing IRs before and after each pass.',
+        help=('With --mode=generate, input log file containing IRs '
+              'before and after each pass, '
+              'or --mode=viewdiff, prefix of a pass directory name'),
         type=str,
         required=True)
-    parser.add_argument(
-        '--dryrun',
-        help='If set, it runs everything but saving the diff files.',
-        action=argparse.BooleanOptionalAction,
-        default=False)
+    parser.add_argument('--dryrun',
+                        help=('If set with --mode=generate, '
+                              'it runs everything but saving the diff files.'),
+                        action=argparse.BooleanOptionalAction,
+                        default=False)
     args = parser.parse_args()
     print('args={}'.format(type(args)))
     return args
@@ -157,6 +197,10 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == '__main__':
     args = parse_args()
-    generator = BlockGenerator(args)
-    generator.generate()
-    generator.save_blocks()
+    if args.mode == _MODE_GENERATE:
+        generator = BlockGenerator(args)
+        generator.generate()
+        generator.save_blocks()
+    else:
+        assert args.mode == _MODE_VIEWDIFF
+        viewdiff(args.input)
