@@ -1,24 +1,35 @@
 version: "3"
 services:
-  opengrok-iree:
-    container_name: opengrok-iree
-    image: opengrok/docker:latest
-    ports:
-      - "9091:8080/tcp"
-    environment:
-      SYNC_PERIOD_MINUTES: '1400'
-    volumes:
-       - '/groksrc/iree/:/opengrok/src/'  # source code
-       - '/opengrok/data/iree/:/opengrok/data/'  # index and other things for source code
-
   opengrok-llvm:
     container_name: opengrok-llvm
     image: opengrok/docker:latest
     ports:
       - "9090:8080/tcp"
     environment:
-      SYNC_PERIOD_MINUTES: '1500'
+      SYNC_PERIOD_MINUTES: '1501'
     volumes:
        - '/groksrc/llvm-project/:/opengrok/src/'  # source code
        - '/opengrok/data/llvm-project/:/opengrok/data/'  # index and other things for source code
+
+  opengrok-iree:
+    container_name: opengrok-iree
+    image: opengrok/docker:latest
+    ports:
+      - "9091:8080/tcp"
+    environment:
+      SYNC_PERIOD_MINUTES: '1401'
+    volumes:
+       - '/groksrc/iree/:/opengrok/src/'  # source code
+       - '/opengrok/data/iree/:/opengrok/data/'  # index and other things for source code
+
+  opengrok-torchmlir:
+    container_name: opengrok-torchmlir
+    image: opengrok/docker:latest
+    ports:
+      - "9093:8080/tcp"
+    environment:
+      SYNC_PERIOD_MINUTES: '1301'
+    volumes:
+       - '/groksrc/torch-mlir/:/opengrok/src/'  # source code
+       - '/opengrok/data/torch-mlir/:/opengrok/data/'  # index and other things for source code
 
