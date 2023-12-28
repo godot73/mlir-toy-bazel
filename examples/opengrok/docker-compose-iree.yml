@@ -8,8 +8,10 @@ services:
     environment:
       SYNC_PERIOD_MINUTES: '1501'
     volumes:
-       - '/groksrc/llvm-project/:/opengrok/src/'  # source code
-       - '/opengrok/data/llvm-project/:/opengrok/data/'  # index and other things for source code
+      # source code
+      - '/groksrc/llvm-project/:/opengrok/src/'
+      # index and other things for source code
+      - '/opengrok/data/llvm-project/:/opengrok/data/'
 
   opengrok-iree:
     container_name: opengrok-iree
@@ -19,8 +21,8 @@ services:
     environment:
       SYNC_PERIOD_MINUTES: '1401'
     volumes:
-       - '/groksrc/iree/:/opengrok/src/'  # source code
-       - '/opengrok/data/iree/:/opengrok/data/'  # index and other things for source code
+      - '/groksrc/iree/:/opengrok/src/'
+      - '/opengrok/data/iree/:/opengrok/data/'
 
   opengrok-torchmlir:
     container_name: opengrok-torchmlir
@@ -30,6 +32,17 @@ services:
     environment:
       SYNC_PERIOD_MINUTES: '1301'
     volumes:
-       - '/groksrc/torch-mlir/:/opengrok/src/'  # source code
-       - '/opengrok/data/torch-mlir/:/opengrok/data/'  # index and other things for source code
+      - '/groksrc/torch-mlir/:/opengrok/src/'
+      - '/opengrok/data/torch-mlir/:/opengrok/data/'
+
+  opengrok-pytorch:
+    container_name: opengrok-pytorch
+    image: opengrok/docker:latest
+    ports:
+      - "9094:8080/tcp"
+    environment:
+      SYNC_PERIOD_MINUTES: '1201'
+    volumes:
+      - '/groksrc/pytorch/:/opengrok/src/'
+      - '/opengrok/data/pytorch/:/opengrok/data/'
 
