@@ -55,6 +55,7 @@ _OPENGROK_PORT_BY_PROJECT = {
     'SRT': 9091,
     'torch-mlir': 9093,
     'pytorch': 9094,
+    'iree-amd-aie': 9095,
 }
 
 
