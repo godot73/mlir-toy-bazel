@@ -12,6 +12,9 @@ nmap \cl :exe ":silent !sccs.py --service=github --file=" . expand("%:~:.") . ' 
 From vim, \cf, \cw, \cl invokes this script with --file and optional --word
 and --line arguments. Then, this script opens, for example, a github page using
 google-chrome.
+
+To use this script with opengrok, start opengrok services from a server and set
+its host name (e.g. localhost) as $OPENGROK environment variable.
 """
 
 import argparse
