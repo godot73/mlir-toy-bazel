@@ -46,3 +46,14 @@ services:
       - '/groksrc/pytorch/:/opengrok/src/'
       - '/opengrok/data/pytorch/:/opengrok/data/'
 
+  opengrok-ireeamdaie:
+    container_name: opengrok-ireeamdaie
+    image: opengrok/docker:latest
+    ports:
+      - "9095:8080/tcp"
+    environment:
+      SYNC_PERIOD_MINUTES: '1201'
+    volumes:
+      - '/groksrc/iree-amd-aie/:/opengrok/src/'
+      - '/opengrok/data/pytorch/:/opengrok/data/'
+
