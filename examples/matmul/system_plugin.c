@@ -26,10 +26,9 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     uint32_t processor_id;
   } params_t;
   const params_t* params = (const params_t*)params_ptr;
-  fprintf(plugin->file, "processor_id=%u\n", params->processor_id);
-  //fprintf(plugin->file, "thread_id=%zu\n", params->tid);
 
-  /*
+#ifdef IREE_PLUGINS_SYSTEM_PLUIN_C_LOG1
+  fprintf(plugin->file, "processor_id=%u\n", params->processor_id);
   if (params->processor_data) {
     fprintf(plugin->file, "processor_data[0]=%" PRIX64 "\n",
             params->processor_data[0]);
@@ -39,7 +38,7 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     params->binding2[params->binding2_offset + i] =
         params->binding0[params->binding0_offset + i] *
         params->binding1[params->binding2_offset + i];
-    fprintf(plugin->file, "mul[%zu:%zu](%g * %g = %g)\n", params->tid, i,
+    fprintf(plugin->file, "mul[%zu](%g * %g = %g)\n", i,
             params->binding0[params->binding0_offset + i],
             params->binding1[params->binding1_offset + i],
             params->binding2[params->binding2_offset + i]);
@@ -47,14 +46,15 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
 
   printf("size_0: %zu; size_1: %zu; size_2: %zu\n", params->d0, params->d1,
          params->d2);
-  
+
   printf("Input A (LHS): \n");
   printf("Size: %zu x %zu ", params->d0, params->d1);
   for (size_t i = 0; i < params->d0; ++i) {
     printf("\n");
     printf("a[%zu]=", i);
     for (size_t j = 0; j < params->d1; ++j) {
-      fprintf(plugin->file, "%g\t", params->binding0[params->binding0_offset+(i*params->d1)+j]);
+      fprintf(plugin->file, "%g\t",
+              params->binding0[params->binding0_offset + (i * params->d1) + j]);
     }
   }
   printf("\n \n");
@@ -64,26 +64,30 @@ static int matmul_f32_workgroup(void* params_ptr, void* context,
     printf("\n");
     printf("b[%zu]=", i);
     for (size_t j = 0; j < params->d2; ++j) {
-      fprintf(plugin->file, "%g\t", params->binding1[params->binding1_offset+(i*params->d2)+j]);
+      fprintf(plugin->file, "%g\t",
+              params->binding1[params->binding1_offset + (i * params->d2) + j]);
     }
   }
   printf("\n \n");
-  */
+#endif
+
   matmul_f32_impl(&params->binding0[params->binding0_offset],
                   &params->binding1[params->binding1_offset],
                   &params->binding2[params->binding2_offset], params->d0,
                   params->d1, params->d2);
-  /*
+
+#ifdef IREE_PLUGINS_SYSTEM_PLUIN_C_LOG2
   printf("Output size: %zu x %zu", params->d0, params->d2);
   for (size_t i = 0; i < params->d0; ++i) {
     printf("\n");
     printf("out[%zu]=", i);
     for (size_t j = 0; j < params->d2; ++j) {
-      fprintf(plugin->file, "%g\t", params->binding2[params->binding2_offset+(i*params->d2)+j]);
+      fprintf(plugin->file, "%g\t",
+              params->binding2[params->binding2_offset + (i * params->d2) + j]);
     }
   }
   printf("\n \n");
-  */
+#endif
   return 0;
 }
 
